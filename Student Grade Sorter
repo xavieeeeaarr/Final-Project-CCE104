@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grade Sorter with Honors</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input {
+            margin-bottom: 10px;
+        }
+        button {
+            margin-top: 10px;
+        }
+        .output {
+            margin-top: 20px;
+        }
+        table {
+            width: 70%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Student Grade Sorter with Honors</h1>
+<div>
+    <label for="studentName">Student Name:</label>
+    <input type="text" id="studentName" placeholder="Enter student name"><br>
+    <label for="averageGrade">Average Grade:</label>
+    <input type="number" id="averageGrade" placeholder="Enter average grade" step="0.01"><br>
+    <button onclick="addStudent()">Add Student</button>
+    <button onclick="sortStudents()">Sort by Grade</button>
+</div>
+
+<div class="output">
+    <h2>Highest Grade</h2>
+    <table id="highestGradeTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Average Grade</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<div class="output">
+    <h2>Sorted Student List with Honors</h2>
+    <table id="honorsTable">
+        <thead>
+            <tr>
+                <th>Placement</th>
+                <th>Name</th>
+                <th>Average Grade</th>
+                <th>Honor</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
+
+<script>
+    let students = [];
+
+    // Function to add a student to the list
+    function addStudent() {
+        const name = document.getElementById('studentName').value;
+        const grade = parseFloat(document.getElementById('averageGrade').value);
+
+        if (name && !isNaN(grade)) {
+            students.push({ name, grade });
+            alert(`Added student: ${name} with grade: ${grade}`);
+            document.getElementById('studentName').value = '';
+            document.getElementById('averageGrade').value = '';
+        } else {
+            alert("Please enter a valid name and grade.");
+        }
+    }
+
+    // Function to perform BFS-like traversal to sort the students by grade
+    function sortStudents() {
+        if (students.length === 0) {
+            alert("No students to sort.");
+            return;
+        }
+
+        // Using BFS-like traversal to sort by grades in descending order
+        let sortedStudents = [];
+        let queue = [...students]; // Clone the students array
+
+        while (queue.length > 0) {
+            // Find the student with the highest grade in the queue
+            let highest = queue.reduce((prev, current) => (prev.grade > current.grade) ? prev : current);
+            
+            // Remove the student with the highest grade from the queue
+            queue = queue.filter(student => student !== highest);
+            
+            // Add the student to the sorted list
+            sortedStudents.push(highest);
+        }
+
+        // Display sorted students and categorize them
+        displaySortedStudents(sortedStudents);
+    }
+
+    // Function to display sorted students and categorize them by honors
+    function displaySortedStudents(sortedStudents) {
+        const highestGradeTbody = document.querySelector('#highestGradeTable tbody');
+        const honorsTbody = document.querySelector('#honorsTable tbody');
+
+        // Clear previous results
+        highestGradeTbody.innerHTML = '';
+        honorsTbody.innerHTML = '';
+
+        // Display the student with the highest grade in a separate table
+        const highestStudent = sortedStudents[0];
+        highestGradeTbody.innerHTML = `<tr><td>${highestStudent.name}</td><td>${highestStudent.grade}</td></tr>`;
+
+        // Categorize and display students with honor or high honor
+        let placement = 1; // Start placement count
+
+        sortedStudents.forEach(student => {
+            let honor = '';
+            if (student.grade >= 90 && student.grade <= 94) {
+                honor = "With Honor";
+            } else if (student.grade >= 95 && student.grade <= 97) {
+                honor = "High Honor";
+            }
+
+            // Display in the honors table if the student qualifies for an honor
+            if (honor) {
+                honorsTbody.innerHTML += `
+                    <tr>
+                        <td>${placement}</td>
+                        <td>${student.name}</td>
+                        <td>${student.grade}</td>
+                        <td>${honor}</td>
+                    </tr>`;
+                placement++;
+            }
+        });
+    }
+</script>
+
+</body>
+</html>
+
+
+
+Changes Made:
+Placement Column: A new column on the left to show the placement of the students in the sorted list.
+Combined Honor Table: The "With Honor" and "High Honor" students are now shown in one table with a column indicating their honor type (either "With Honor" or "High Honor").
+Highest Grade Table: The student with the highest grade is displayed in a separate table, as requested.
+
+How It Works:
+The highest grade student is displayed at the top.
+For students with grades between 90-94, they are labeled as "With Honor," and for grades between 95-97, they are labeled as "High Honor."
+Students are sorted by their grades, and their placement is shown in the first column of the "Honors" table.
+This should meet your requirements for separating the highest student and displaying the honors with proper labels and placements. Let me know if you need any further adjustments!
